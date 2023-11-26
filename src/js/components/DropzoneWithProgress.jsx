@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo, Suspense, memo } from 'react';
+import { lazy, useState, useEffect, useCallback, useMemo, Suspense, memo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDropzone } from 'react-dropzone';
 /* Components */
-import Pagination from './Pagination';
-import ImageGallery from './ImageGallery';
+const Pagination = lazy(() => import('./Pagination'));
+const ImageGallery = lazy(() => import('./ImageGallery'));
 
 const ThumbPlaceholder = () => {
   return (
@@ -93,12 +93,15 @@ const DropzoneWithProgress = ({ name, id, setFieldValue }) => {
       <ul className='grid grid-cols-7 items-center gap-y-2 gap-x-2.5'>
         {thumbs}
       </ul>
-      {files?.length && <ImageGallery images={files.map(file => file.preview)} startingIndex={2} />}
+
+      {files?.length && <Suspense fallback={<div>loading...</div>}><ImageGallery images={files.map(file => file.preview)} startingIndex={0} /></Suspense>}
       {files?.length &&
-        <Pagination items={files} itemsPerPage={itemsPerPage} currentPage={currentPage}
-                    setCurrentPage={setCurrentPage} />}
+        <Suspense fallback={<div>loading...</div>}>
+          <Pagination items={files} itemsPerPage={itemsPerPage} currentPage={currentPage}
+                    setCurrentPage={setCurrentPage} />
+        </Suspense>}
     </div>
   );
 };
 
-export default memo(DropzoneWithProgress);
+export default DropzoneWithProgress;

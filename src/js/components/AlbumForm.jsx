@@ -1,11 +1,12 @@
 /* Dependancies */
-import { useState } from 'react';
+import { lazy, useState } from 'react';
+
 import axios from 'axios';
 /* Components */
-import DropzoneWithProgress from './DropzoneWithProgress';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
+const DropzoneWithProgress = lazy(() => import('./DropzoneWithProgress'));
 
 const validationSchema = Yup.object().shape({
   images: Yup.array().of(Yup.mixed().required('Please upload an image'))

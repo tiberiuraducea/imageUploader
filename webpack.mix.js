@@ -8,9 +8,3 @@ mix.js('src/js/index.js', 'public/js/app.js') // Change 'resources/js/app.js' to
    .webpackConfig({
         devtool: 'source-map', // Optional: Add source maps for better debugging
    });
-
-if (mix.inProduction()) {
-    mix.minify('public/js/app.js') // Minify JS for production
-    .minify('public/css/app.css') // Minify CSS for production
-    .version(); // Versioning assets for production
-}

@@ -1,12 +1,7 @@
 import AlbumForm from './components/AlbumForm';
 
 const App = () => {
-
-  return (
-    <div>
-      <AlbumForm />
-    </div>
-  );
+  return (<AlbumForm />);
 };
 
 export default App;
