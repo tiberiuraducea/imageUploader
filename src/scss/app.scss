@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Colour Palette */
+  --dog-green: #254F38;
+  --stroke-green: #CDD383;
+  --red: #EB5757;
+  --orange: #F2994A;
+  --yellow: #F2C94C;
+  --green-1: #219653;
+  --green-2: #27AE60;
+  --green-3: #6FCF97;
+  --blue-1: #2F80ED;
+  --blue-2: #2D9CDB;
+  --blue-3: #56CCF2;
+  --purple-1: #9B51E0;
+  --purple-2: #BB6BD9;
+
+  /* Grays */
+  --gray-1: #333;
+  --gray-2: #4F4F4F;
+  --gray-3: #828282;
+  --gray-4: #BDBDBD;
+  --gray-5: #E0E0E0;
+  --gray-6: #F2F2F2;
+}

@@ -1,0 +1,57 @@
+{
+    "name": "image-uploader",
+    "version": "1.0.0",
+    "description": "Custom React 18 implementation with Tailwind CSS and Laravel Mix",
+    "main": "index.js",
+    "scripts": {
+        "dev": "mix",
+        "watch": "mix watch",
+        "serve": "mix --serve",
+        "start": "npx serve -s .",
+        "prod": "npm run production",
+        "production": "mix --production && rm -rf node_modules/"
+    },
+    "prettier": {
+        "singleQuote": true,
+        "tabWidth": 2
+    },
+    "author": "me",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.21.4",
+        "@babel/plugin-syntax-jsx": "^7.22.5",
+        "@babel/preset-env": "^7.21.4",
+        "@babel/preset-react": "^7.18.6",
+        "autoprefixer": "^10.4.2",
+        "babel-cli": "^6.26.0",
+        "babel-loader": "^9.1.2",
+        "babel-preset-react-app": "^3.1.2",
+        "babel-runtime": "^6.26.0",
+        "laravel-mix": "^6.0.6",
+        "lodash": "^4.17.19",
+        "mix-tailwindcss": "^1.3.0",
+        "onchange": "^7.1.0",
+        "postcss": "^8.4.6",
+        "postcss-import": "^14.0.1",
+        "postcss-url": "^10.1.3",
+        "prettier": "^2.8.4",
+        "resolve-url-loader": "^5.0.0",
+        "sass": "^1.55.0",
+        "sass-loader": "^12.1.0",
+        "webpack-cli": "^5.1.4"
+    },
+    "dependencies": {
+        "@tailwindcss/forms": "^0.5.7",
+        "axios": "^1.6.2",
+        "formik": "^2.4.5",
+        "framer-motion": "^10.16.5",
+        "popmotion": "^11.0.5",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-dropzone": "^14.2.3",
+        "react-router-dom": "^6.15.0",
+        "tailwindcss": "^3.3.3",
+        "uuid": "^9.0.1",
+        "yup": "^1.3.2"
+    }
+}
