@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { wrap } from "popmotion";
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { wrap } from 'popmotion';
+import clsx from 'clsx';
 
 const variants = {
   enter: (direction) => {
@@ -44,32 +45,56 @@ const ImageGallery = ({ images, startingIndex = 0 }) => {
   const imageIndex = wrap(0, images.length, page);
 
   const paginate = (newDirection) => {
-    setPage([page + newDirection, newDirection]);
+    setPage((prevState) => {
+      return [prevState[0] + newDirection, newDirection];
+    });
   };
 
   if (images?.length === 0) {
     return null;
   }
 
-  const buttonClasses = 'absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2 text-2xl font-bold text-dog-green hover:bg-opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dog-green';
+  useEffect(() => {
+    const keyDownHandler = (e) => {
+      if (e.key === 'ArrowLeft') {
+        paginate(-1);
+
+      } else if (e.key === 'ArrowRight') {
+        paginate(1);
+      }
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+    };
+  }, []);
+
+  const buttonClasses = clsx([
+    'absolute top-1/2 transform -translate-y-1/2 z-10', // position
+    'text-white fill-white rounded-full p-4 text-2xl font-bold text-dog-green transition-transform text-3xl', // styles
+    'hover:scale-125 focus:outline-none focus:ring focus:ring-offset-2 focus:ring-dog-green' // focus & hover
+  ]);
 
   return (
-    <div className="relative flex aspect-square items-center justify-center overflow-hidden">
+    <div className='relative flex aspect-square items-center justify-center overflow-hidden w-full'>
       <AnimatePresence initial={false} custom={direction}>
         <motion.img
           key={page}
-          src={images[imageIndex]}
+          src={URL.createObjectURL(images[imageIndex])}
           custom={direction}
           variants={variants}
-          initial="enter"
-          animate="center"
-          className='absolute max-w-full object-contain'
-          exit="exit"
+          initial='enter'
+          animate='center'
+          className='absolute h-auto max-h-screen max-w-full object-contain'
+          exit='exit'
+          onLoad={() => URL.revokeObjectURL(images[imageIndex])}
           transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
+            x: { type: 'spring', stiffness: 300, damping: 30 },
             opacity: { duration: 0.2 }
           }}
-          drag="x"
+          drag='x'
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={1}
           onDragEnd={(e, { offset, velocity }) => {
@@ -83,11 +108,23 @@ const ImageGallery = ({ images, startingIndex = 0 }) => {
           }}
         />
       </AnimatePresence>
-      <button type='button' role='button' className={`${buttonClasses} left-0 text-3xl rotate-180`} onClick={() => paginate(1)}>
-        {"‣"}
+      <button
+        aria-label='Previous image'
+        type='button'
+        role='button'
+        className={`${buttonClasses} left-3 rotate-180`}
+        onClick={() => paginate(-1)}
+      >
+        {'‣'}
       </button>
-      <button type='button' role='button' className={`${buttonClasses} right-0 text-3xl`} onClick={() => paginate(-1)}>
-        {"‣"}
+      <button
+        aria-label='Next image'
+        type='button'
+        role='button'
+        className={`${buttonClasses} right-3`}
+        onClick={() => paginate(1)}
+      >
+        {'‣'}
       </button>
     </div>
   );

@@ -1,29 +1,41 @@
-import { lazy, useState, useEffect, useCallback, useMemo, Suspense, memo } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDropzone } from 'react-dropzone';
+import { getBreakPoint } from '../helpers/getBreakPoint/getBreakPoint';
+import { useUploaderContext } from '../context/uploaderContext';
+import useMediaQuery from '../hooks/useMediaQuery';
+import { Underline } from './Icons';
+import Previews from './Previews';
+import Loading from './Loading';
 /* Components */
 const Pagination = lazy(() => import('./Pagination'));
 const ImageGallery = lazy(() => import('./ImageGallery'));
+const Modal = lazy(() => import('./Modal'));
 
-const ThumbPlaceholder = () => {
-  return (
-    <div className='absolute top-0 left-0 h-full w-full object-cover object-center bg-gray-5' />
-  );
-};
-const DropzoneWithProgress = ({ name, id, setFieldValue }) => {
+const DropzoneWithProgress = ({ name, id, error, touched, setFieldValue }) => {
+
+  const tailwindBPWidth = getBreakPoint('md');
+  const isMobile = useMediaQuery(`(max-width: ${tailwindBPWidth})`);
+
+  const { setLoading } = useUploaderContext();
+
+  const [startImage, setStartImage] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
   // files to be uploaded
   const [files, setFiles] = useState([]);
+
   // current page
   const [currentPage, setCurrentPage] = useState(0);
   // items per page
-  const [itemsPerPage] = useState(28);
+  const [itemsPerPage, setItemsPerPage] = useState(0);
 
   const onDrop = useCallback(acceptedFiles => {
-    // Add files to state array. This will also trigger a re-render
-    setFiles(prevState => [...prevState, ...acceptedFiles.map(file => Object.assign(file, {
-      id: uuidv4(), // Generate a unique id for each file
-      preview: URL.createObjectURL(file) // Create a preview for the image
-    }))]);
+
+    setFiles(prevState => [...prevState, ...acceptedFiles.map(file => {
+      return Object.assign(file, {
+        id: uuidv4()
+      });
+    })]);
   }, []);
 
 
@@ -34,7 +46,31 @@ const DropzoneWithProgress = ({ name, id, setFieldValue }) => {
     onDrop
   });
 
-  // Create the image thumbnails list
+  const removeFile = (file) => {
+    // Remove the file from the state array
+    URL.revokeObjectURL(file);
+    setFiles(files.filter(item => item.id !== file.id));
+  };
+
+  const clickHandler = (imageId) => {
+    setStartImage(imageId);
+    setOpenModal(true);
+  };
+
+  const changePage = (newPage) => {
+    setLoading(true);
+    setCurrentPage(newPage);
+  };
+
+  useEffect(() => {
+    setFieldValue(name, files);
+  }, [files]);
+
+  useEffect(() => {
+    setItemsPerPage(isMobile ? 12 : 20);
+  }, [isMobile]);
+
+
   const thumbs = useMemo(() => {
     const start = itemsPerPage * currentPage;
     const end = itemsPerPage + (itemsPerPage * currentPage);
@@ -43,63 +79,58 @@ const DropzoneWithProgress = ({ name, id, setFieldValue }) => {
       setCurrentPage(currentPage - 1);
     }
 
-    // Create a slice of the files array to be displayed on the current page without mutating the original array
-    const setOfFiles = [...files].slice(start, end);
+    if (currentPage > files.length / itemsPerPage) {
+      setCurrentPage(0);
+    }
 
-    return setOfFiles?.map(file => (
-      <li key={file.id} className='relative aspect-square overflow-hidden rounded-lg'>
-        <Suspense fallback={<ThumbPlaceholder />}>
-          <img
-            className='absolute top-0 left-0 h-full w-full object-cover object-center'
-            src={file.preview}
-            alt={`Preview of ${file.name}`}
-          />
-          <button onClick={() => removeFile(file.id)}
-                  className='absolute bottom-0 left-0 block w-full bg-red-700 text-center font-medium text-white p-0.5'>Remove
-          </button>
-        </Suspense>
-      </li>
-    ));
-  }, [files, currentPage]);
-
-  const removeFile = (id) => {
-
-    // Revoking the data uris to avoid memory leaks
-    URL.revokeObjectURL(files.find(file => file.id === id).preview);
-
-    // Remove the file from the state array
-    setFiles(files.filter(file => file.id !== id));
-  };
-
-  useEffect(() => {
-// Make sure to revoke the data uris to avoid memory leaks
-    return () => files.forEach(file => URL.revokeObjectURL(file.preview));
-  }, []);
-
-  useEffect(() => {
-    setFieldValue(name, files);
-  }, [files]);
+    return files.slice(start, end);
+  }, [itemsPerPage, files, currentPage]);
 
   return (
-    <div>
+    <div className='mb-2'>
       <div {...getRootProps()}
-           className='flex w-full flex-row flex-wrap items-center justify-center rounded-lg border border-dashed border-teal-700 min-h-[400px] dropzone'
+           className='flex w-full flex-row flex-wrap items-center justify-center rounded-lg border border-dashed border-orange/60 hover:border-orange transition-colors cursor-pointer min-h-[100px] dropzone mb-2'
       >
-        <input {...getInputProps()} type='file' name={name} id={id} multiple={true} accept='image/*' />
-        <p>Drag & drop some images here, or click to select files.</p>
+        <input
+          {...getInputProps()}
+          type='file'
+          name={name}
+          id={id}
+          multiple={true}
+          accept='image/*'
+        />
+        <p className='text-white text-xs'>Drag & drop some images here, or click the button below.</p>
       </div>
-      {/* {progress > 0 && <progress value={progress} max="100" className="w-full" />} */}
 
-      <ul className='grid grid-cols-7 items-center gap-y-2 gap-x-2.5'>
-        {thumbs}
-      </ul>
+      <label htmlFor={id} className='text-center block w-full mb-2'>
+                <span
+                  className='bg-stroke-green text-dog-green text-xs py-3 px-8 rounded-full inline-block cursor-pointer'>Upload Photos</span>
+      </label>
 
-      {files?.length && <Suspense fallback={<div>loading...</div>}><ImageGallery images={files.map(file => file.preview)} startingIndex={0} /></Suspense>}
-      {files?.length &&
-        <Suspense fallback={<div>loading...</div>}>
+      {touched && error && <div className='text-xs text-red-500'>{error}</div>}
+
+      {files?.length > 0 && <h2 className='font-bold text-center flex flex-col items-center mb-8 text-gray-5'>
+        <span>{files.length} Photos</span>
+        <span className='-mt-1.5'>
+                    <Underline />
+                </span>
+      </h2>}
+
+      <Previews files={thumbs} onItemRemove={removeFile} onItemClick={clickHandler} />
+
+      <Modal isOpen={openModal} setIsOpen={setOpenModal}>
+        <Suspense fallback={<Loading />}>
+          <ImageGallery images={files}
+                        startingIndex={[...files].findIndex(file => file.id === startImage)} />
+        </Suspense>
+      </Modal>
+
+      {files?.length > 0 &&
+        <Suspense fallback={<Loading />}>
           <Pagination items={files} itemsPerPage={itemsPerPage} currentPage={currentPage}
-                    setCurrentPage={setCurrentPage} />
-        </Suspense>}
+                      setCurrentPage={changePage} />
+        </Suspense>
+      }
     </div>
   );
 };

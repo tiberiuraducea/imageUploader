@@ -4,25 +4,27 @@
 
 :root {
   /* Colour Palette */
-  --dog-green: #254F38;
-  --stroke-green: #CDD383;
-  --red: #EB5757;
-  --orange: #F2994A;
-  --yellow: #F2C94C;
-  --green-1: #219653;
-  --green-2: #27AE60;
-  --green-3: #6FCF97;
-  --blue-1: #2F80ED;
-  --blue-2: #2D9CDB;
-  --blue-3: #56CCF2;
-  --purple-1: #9B51E0;
-  --purple-2: #BB6BD9;
+  --dog-green: 37 79 56; // hex #254F38
+  --alex-green: 200 218 46; // hex #C8DA2E
+  --stroke-green: 205 211 131; // hex #CDD383
+  --red: 235 87 87; // hex #EB5757
+  --alert-red: 168 27 27; // hex #A81B1B rgb 168 27 27
+  --orange: 242 153 74; // hex #F2994A
+  --yellow: 242 201 76; // hex #F2C94C
+  --green-1: 33 150 83; // hex #219653
+  --green-2: 39 174 96; // hex #27AE60
+  --green-3: 111 207 151; // hex #6FCF97
+  --blue-1: 47 128 237; // hex #2F80ED
+  --blue-2: 45 156 219; // hex #2D9CDB
+  --blue-3: 86 204 242; // hex #56CCF2
+  --purple-1: 155 81 224; // hex #9B51E0
+  --purple-2: 187 107 217; // hex #BB6BD9
 
   /* Grays */
-  --gray-1: #333;
-  --gray-2: #4F4F4F;
-  --gray-3: #828282;
-  --gray-4: #BDBDBD;
-  --gray-5: #E0E0E0;
-  --gray-6: #F2F2F2;
+  --gray-1: 51 51 51; // hex #333
+  --gray-2: 79 79 79; // hex #4F4F4F
+  --gray-3: 130 130 130; // hex #828282
+  --gray-4: 189 189 189; // hex #BDBDBD
+  --gray-5: 224 224 224; // hex #E0E0E0
+  --gray-6: 242 242 242; // hex #F2F2F2
 }
